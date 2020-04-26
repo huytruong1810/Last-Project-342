@@ -19,6 +19,14 @@ public class WordGuessServer extends Application {
 		Scene scene = new Scene(new HBox(),600,600);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+		System.out.println(WordRepository.getRandWord(WordRepository.Disease) + "\n");
+
+		for (int i = 0; i < WordRepository.Disease.size(); ++i) {
+			System.out.println(WordRepository.Disease.get(i) + " ");
+		}
+
+
 	}
 
 }
