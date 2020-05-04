@@ -41,7 +41,7 @@ public class Server{
                     count += 1;
 
                     ClientThread c = new ClientThread(mysocket.accept(), count);
-                    callback.accept(new GameInfo(0, count, -1, -1, -1, '$', 'X', -1, false, false, false));
+                    callback.accept(new GameInfo(0, count, -1, 6, 3, '$', 'X', -1, false, false, false));
                     clientInfos.add(new ClientInfo(count));
                     clients.add(c);
                     c.start();
@@ -90,7 +90,7 @@ public class Server{
                 System.out.println("Streams not open");
             }
 
-            updateClients(new GameInfo(0, count, -1, -1, -1, '$', 'X', -1, false, false, false));
+            updateClients(new GameInfo(0, count, -1, 6, 3, '$', 'X', -1, false, false, false));
 
             while(true) {
                 try {
@@ -102,22 +102,45 @@ public class Server{
                     boolean win = inData.win, lose = inData.lose, letterInWord = inData.letterInWord;
 
                     ClientInfo thisClient = clientInfos.get(clientNum-1);
-
+                    thisClient.numGuessLeft = inData.numRemainGuess;
+                    thisClient.numAttemptLeft = inData.numRemainAttempt;
                     thisClient.categoryChoice = category;
+
                     if (numLetter == 0) {
+
                         String word = WordRepository.getRandWord(thisClient.categoryChoice);
                         WordRepository.holdString = word;
                         thisClient.givenWord = word;
                         numLetter = word.length();
+
                     }
-                    thisClient.numGuessLeft = inData.numRemainGuess;
-                    thisClient.numAttemptLeft = inData.numRemainAttempt;
+                    else {
 
-                    if (playerHasWon(thisClient))
-                        win = true;
-                    else if (playerHasLost(thisClient))
-                        lose = true;
+                        int check = thisClient.givenWord.indexOf(guess);
+                        if (check == -1) {
+                            letterInWord = false;
+                            thisClient.numGuessLeft -= 1;
+                            numGuess -= 1;
+                        }
+                        else {
 
+                            letterInWord = true;
+                            charLocation = check;
+
+                            StringBuilder sb = new StringBuilder(thisClient.givenWord);
+                            sb.replace(check, check + 1, " ");
+                            thisClient.givenWord = sb.toString();
+
+                        }
+
+                        if (playerHasWon(thisClient)) {
+                            win = true;
+                        }
+                        else if (playerHasLost(thisClient)) {
+                            lose = true;
+                        }
+
+                    }
 
                     callback.accept(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
                     updateClients(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
@@ -136,15 +159,15 @@ public class Server{
         }//end of run
 
         boolean playerHasWon (ClientInfo theClient) {
-            for (int i = 0; i < 3; ++i) {
-                if (theClient.categories[i] != 'X')
+            for (int i = 0; i < theClient.givenWord.length(); ++i) {
+                if (theClient.givenWord.charAt(i) != ' ')
                     return false;
             }
             return true;
         }
 
         boolean playerHasLost (ClientInfo theClient) {
-            if (theClient.numAttemptLeft == 0)
+            if (theClient.numGuessLeft == 0)
                 return true;
             return false;
         }

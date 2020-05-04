@@ -1,3 +1,14 @@
+/**
+ *
+ * Authors: Huy Truong, Mallika Patil, Maryam Ahmed, Simrah Shaik
+ * NetID: thuyng2, mpatil5, mahmed80, sshaik28
+
+ * Description:  Create a server that plays a word guessing game with each client that connects to that server
+ * (similar to Wheel of Fortune or Hangman).
+ *
+ *
+ */
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -121,6 +132,19 @@ public class WordGuessServer extends Application {
                                     }
                                     listItems.getItems().add("Client " + clientNum + " guess letter " + data.guess);
 
+                                    int charLocation = thisClient.givenWord.indexOf(data.guess);
+                                    if (charLocation == -1) {
+                                        listItems.getItems().add("Letter " + data.guess + " is not in " + thisClient.givenWord);
+                                        listItems.getItems().add("Client " + clientNum + "'s number of\nguesses is now " + data.numRemainGuess);
+                                    }
+                                    else {
+                                        listItems.getItems().add("Letter " + data.guess + " is in " + thisClient.givenWord);
+                                        listItems.getItems().add("Sending confirmation to client " +clientNum);
+
+                                        StringBuilder sb = new StringBuilder(thisClient.givenWord);
+                                        sb.replace(charLocation, charLocation + 1, " ");
+                                        thisClient.givenWord = sb.toString();
+                                    }
 
                                     break;
 
@@ -133,7 +157,7 @@ public class WordGuessServer extends Application {
                                 Text categoryField = new Text("Category: " + theClient.categoryChoice);
                                 Text wordField = new Text("Word: " + theClient.givenWord);
                                 Text numGuessField = new Text("Number of guesses left: " + theClient.numGuessLeft);
-                                Text numAttemptField = new Text("Number of attemp left: " + theClient.numAttemptLeft);
+                                Text numAttemptField = new Text("Number of attempt left: " + theClient.numAttemptLeft);
                                 Text statusField = new Text("Player is playing...");
 
                                 if (playerHasWon(theClient)) {
@@ -170,15 +194,15 @@ public class WordGuessServer extends Application {
     }
 
     boolean playerHasWon (ClientInfo theClient) {
-        for (int i = 0; i < 3; ++i) {
-            if (theClient.categories[i] != 'X')
+        for (int i = 0; i < theClient.givenWord.length(); ++i) {
+            if (theClient.givenWord.charAt(i) != ' ')
                 return false;
         }
         return true;
     }
 
     boolean playerHasLost (ClientInfo theClient) {
-        if (theClient.numAttemptLeft == 0)
+        if (theClient.numGuessLeft == 0)
             return true;
         return false;
     }

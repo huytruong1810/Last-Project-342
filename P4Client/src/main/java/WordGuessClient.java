@@ -1,3 +1,14 @@
+/**
+ *
+ * Authors: Huy Truong, Mallika Patil, Maryam Ahmed, Simrah Shaik
+ * NetID: thuyng2, mpatil5, mahmed80, sshaik28
+
+ * Description:  Create a server that plays a word guessing game with each client that connects to that server
+ * (similar to Wheel of Fortune or Hangman).
+ *
+ *
+ */
+
 import javafx.scene.control.Label;
 import javafx.scene.text.Text; 
 import javafx.application.Application;
@@ -68,12 +79,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
+
 public class WordGuessClient extends Application {
 
 	Client clientConnection;
 	int numLetter = 0, clientNum, numGuess, numAttempt, charLocation;
 	char category, guess;
-	boolean win, lose, letterInWord;
+	boolean win = false, lose = false, letterInWord;
 
 	ArrayList<Character> letters = new ArrayList<>();
 	ArrayList<Button> letterButtons = new ArrayList<>();
@@ -488,7 +500,6 @@ public class WordGuessClient extends Application {
 		DiseasesButton.setStyle(
 				"-fx-background-radius: 100em;" +
                 "-fx-min-height: 50px; " +
-                "-fx-max-width: 120px;"  +
                 "-fx-min-width: 120px; " +
                 "-fx-max-height: 50px;"
         );
@@ -499,7 +510,6 @@ public class WordGuessClient extends Application {
 		MythicalCreaturesButton.setStyle(
 				"-fx-background-radius: 100em;" +
 				"-fx-min-height: 50px; " +
-                "-fx-max-width: 120px;"  +
                 "-fx-min-width: 120px; " +
                 "-fx-max-height: 50px;"
         );
@@ -510,7 +520,6 @@ public class WordGuessClient extends Application {
 		ProgrammingLanguagesButton.setStyle(
 				"-fx-background-radius: 100em;" +
 				"-fx-min-height: 50px; " +
-                "-fx-max-width: 130px;"  +
                 "-fx-min-width: 130px; " +
                 "-fx-max-height: 50px;"
         );
@@ -575,6 +584,24 @@ public class WordGuessClient extends Application {
 		GameChoices.setStyle("-fx-background-color: #f6eedf"); 
 		
 		/* Other Buttons */
+
+		Plus.setOnAction(e -> {
+			try {
+				start(primaryStage);
+			}
+			catch (Exception ex) {
+				System.out.println("Replay Error");
+			}
+		});
+
+		Replay.setOnAction(e -> {
+			try {
+				start(primaryStage);
+			}
+			catch (Exception ex) {
+				System.out.println("Replay Error");
+			}
+		});
 		
 		Exit.setOnAction( new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent event) {
@@ -712,7 +739,7 @@ public class WordGuessClient extends Application {
 		
 		Connect.setOnAction(e -> {
 
-			clientConnection = new Client ( data -> {
+			clientConnection = new Client (data -> {
 				Platform.runLater(() -> {
 
 					primaryStage.setScene(gameScene);
@@ -726,38 +753,49 @@ public class WordGuessClient extends Application {
 							clientNum = data.clientNum;
 							Messages.getItems().add("You are player " + clientNum);
 							Messages.getItems().add("Please choose one in 3\ncategories below!");
+							numGuess = 6;
+							numAttempt = 3;
 							break;
 						case 1:
+							numGuess = data.numRemainGuess;
+							numAttempt = data.numRemainAttempt;
+
+							numAttempt = 3;
+
 							if (numLetter == 0) {
+
 								Messages.getItems().add("Word has been given!");
 								number.setText(Integer.toString(data.numLetter));
 								numLetter = data.numLetter;
+
 							}
 							else {
 
 								win = data.win;
 								lose = data.lose;
+
 								if (win) {
 									Messages.getItems().add("You have won!");
+									setDisabilityLetterBank(true);
 									break;
 								}
 								else if (lose) {
 									Messages.getItems().add("You have lost!");
+									setDisabilityLetterBank(true);
 									break;
 								}
-
 
 								guessNum.setText(Integer.toString(data.numRemainGuess));
 								attemptNum.setText(Integer.toString(data.numRemainAttempt));
 
-
+								letterInWord = data.letterInWord;
 								if (letterInWord) {
 									Messages.getItems().add("Guess is correct!");
 									charLocation = data.charLocation;
-									letters.add(charLocation, guess);
+									letters.set(charLocation, guess);
 								}
 								else {
-									Messages.getItems().add("Wrong guess!\nNumber of guesses decreased!");
+									Messages.getItems().add("Wrong guess or\nguess has already been made\nNumber of guesses decreased!");
 								}
 
 							}
@@ -779,9 +817,12 @@ public class WordGuessClient extends Application {
 										"-fx-background-color: #add8e6"
 						);
 
-						if (letters.size() != 0)
-							letter.setText(Character.toString(letters.get(i)));
+						letters.add(' ');
 						letterButtons.add(letter);
+
+						letter.setText(Character.toString(letters.get(i)));
+						letter.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+
 						NumLetters.getChildren().add(letter);
 
 					}
@@ -930,7 +971,7 @@ public class WordGuessClient extends Application {
 			ProgrammingLanguagesButton.setDisable(true);
 			category = 'D';
 			Messages.getItems().add("Chosen Disease");
-			unDisableLetterBank();
+			setDisabilityLetterBank(false);
 			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
 
 		});
@@ -942,7 +983,7 @@ public class WordGuessClient extends Application {
 			ProgrammingLanguagesButton.setDisable(true);
 			category = 'M';
 			Messages.getItems().add("Chosen Mythical Creatures");
-			unDisableLetterBank();
+			setDisabilityLetterBank(false);
 			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
 
 		});
@@ -954,12 +995,13 @@ public class WordGuessClient extends Application {
 			ProgrammingLanguagesButton.setDisable(true);
 			category = 'P';
 			Messages.getItems().add("Chosen Programming Language");
-			unDisableLetterBank();
+			setDisabilityLetterBank(false);
 			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
 
 		});
 
 		Submit.setOnAction(e -> {
+
 
 			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
 			Messages.getItems().add("Letter is submitted successfully!");
@@ -972,33 +1014,33 @@ public class WordGuessClient extends Application {
 		primaryStage.show();
 	}
 
-	private void unDisableLetterBank() {
-		Letter_A.setDisable(false);
-		Letter_B.setDisable(false);
-		Letter_C.setDisable(false);
-		Letter_D.setDisable(false);
-		Letter_E.setDisable(false);
-		Letter_F.setDisable(false);
-		Letter_G.setDisable(false);
-		Letter_H.setDisable(false);
-		Letter_I.setDisable(false);
-		Letter_J.setDisable(false);
-		Letter_K.setDisable(false);
-		Letter_L.setDisable(false);
-		Letter_M.setDisable(false);
-		Letter_N.setDisable(false);
-		Letter_O.setDisable(false);
-		Letter_P.setDisable(false);
-		Letter_Q.setDisable(false);
-		Letter_R.setDisable(false);
-		Letter_S.setDisable(false);
-		Letter_T.setDisable(false);
-		Letter_U.setDisable(false);
-		Letter_V.setDisable(false);
-		Letter_W.setDisable(false);
-		Letter_X.setDisable(false);
-		Letter_Y.setDisable(false);
-		Letter_Z.setDisable(false);
+	private void setDisabilityLetterBank (boolean val) {
+		Letter_A.setDisable(val);
+		Letter_B.setDisable(val);
+		Letter_C.setDisable(val);
+		Letter_D.setDisable(val);
+		Letter_E.setDisable(val);
+		Letter_F.setDisable(val);
+		Letter_G.setDisable(val);
+		Letter_H.setDisable(val);
+		Letter_I.setDisable(val);
+		Letter_J.setDisable(val);
+		Letter_K.setDisable(val);
+		Letter_L.setDisable(val);
+		Letter_M.setDisable(val);
+		Letter_N.setDisable(val);
+		Letter_O.setDisable(val);
+		Letter_P.setDisable(val);
+		Letter_Q.setDisable(val);
+		Letter_R.setDisable(val);
+		Letter_S.setDisable(val);
+		Letter_T.setDisable(val);
+		Letter_U.setDisable(val);
+		Letter_V.setDisable(val);
+		Letter_W.setDisable(val);
+		Letter_X.setDisable(val);
+		Letter_Y.setDisable(val);
+		Letter_Z.setDisable(val);
 	}
 
 }
