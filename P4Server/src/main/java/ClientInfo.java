@@ -11,7 +11,7 @@ public class ClientInfo {
         clientNum = num;
         categoryChoice = 'X';
         givenWord = "";
-        categories = new char[]{'D', 'M', 'P'};
+        categories = new char[]{'D', 'M', 'P'}; // all 'X' means the client has won the game
         numGuessLeft = 6;
         numAttemptLeft = 3;
 

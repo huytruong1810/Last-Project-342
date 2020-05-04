@@ -69,9 +69,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 public class WordGuessClient extends Application {
-	
-	int NUM_OF_LETTERS = 5; 
-	
+
+	Client clientConnection;
+	int numLetter = 0, clientNum, numGuess, numAttempt, charLocation;
+	char category, guess;
+	boolean win, lose, letterInWord;
+
+	ArrayList<Character> letters = new ArrayList<>();
+	ArrayList<Button> letterButtons = new ArrayList<>();
+
+	Button Letter_A, Letter_B, Letter_C, Letter_D, Letter_E, Letter_F, Letter_G, Letter_H, Letter_I,
+			Letter_J, Letter_K, Letter_L, Letter_M, Letter_N, Letter_O, Letter_P, Letter_Q, Letter_R,
+			Letter_S, Letter_T, Letter_U, Letter_V, Letter_W, Letter_X, Letter_Y, Letter_Z;
+
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		launch(args);
@@ -124,7 +135,7 @@ public class WordGuessClient extends Application {
 		
 		/* Buttons */ 
 		/* Letter Buttons */ 
-		Button Letter_A = new Button();
+		Letter_A = new Button();
 		Letter_A.setGraphic(new ImageView(letter_a));
 		Letter_A.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -133,8 +144,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_A.setDisable(true);
 		
-		Button Letter_B = new Button();
+		Letter_B = new Button();
 		Letter_B.setGraphic(new ImageView(letter_b));
 		Letter_B.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -143,8 +155,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_B.setDisable(true);
 		
-		Button Letter_C = new Button();
+		Letter_C = new Button();
 		Letter_C.setGraphic(new ImageView(letter_c));
 		Letter_C.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -153,8 +166,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_C.setDisable(true);
 		
-		Button Letter_D = new Button();
+		Letter_D = new Button();
 		Letter_D.setGraphic(new ImageView(letter_d));
 		Letter_D.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -163,8 +177,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_D.setDisable(true);
 		
-		Button Letter_E = new Button();
+		Letter_E = new Button();
 		Letter_E.setGraphic(new ImageView(letter_e));
 		Letter_E.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -173,8 +188,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_E.setDisable(true);
 		
-		Button Letter_F = new Button();
+		Letter_F = new Button();
 		Letter_F.setGraphic(new ImageView(letter_f));
 		Letter_F.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -183,8 +199,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_F.setDisable(true);
 		
-		Button Letter_G = new Button();
+		Letter_G = new Button();
 		Letter_G.setGraphic(new ImageView(letter_g));
 		Letter_G.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -193,8 +210,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_G.setDisable(true);
 		
-		Button Letter_H = new Button();
+		Letter_H = new Button();
 		Letter_H.setGraphic(new ImageView(letter_h));
 		Letter_H.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -203,8 +221,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_H.setDisable(true);
 		
-		Button Letter_I = new Button();
+		Letter_I = new Button();
 		Letter_I.setGraphic(new ImageView(letter_i));
 		Letter_I.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -213,8 +232,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_I.setDisable(true);
 		
-		Button Letter_J = new Button();
+		Letter_J = new Button();
 		Letter_J.setGraphic(new ImageView(letter_j));
 		Letter_J.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -223,8 +243,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_J.setDisable(true);
 		
-		Button Letter_K = new Button();
+		Letter_K = new Button();
 		Letter_K.setGraphic(new ImageView(letter_k));
 		Letter_K.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -233,8 +254,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_K.setDisable(true);
 		
-		Button Letter_L = new Button();
+		Letter_L = new Button();
 		Letter_L.setGraphic(new ImageView(letter_l));
 		Letter_L.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -243,8 +265,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_L.setDisable(true);
 		
-		Button Letter_M = new Button();
+		Letter_M = new Button();
 		Letter_M.setGraphic(new ImageView(letter_m));
 		Letter_M.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -253,8 +276,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_M.setDisable(true);
 		
-		Button Letter_N = new Button();
+		Letter_N = new Button();
 		Letter_N.setGraphic(new ImageView(letter_n));
 		Letter_N.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -263,8 +287,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_N.setDisable(true);
 		
-		Button Letter_O = new Button();
+		Letter_O = new Button();
 		Letter_O.setGraphic(new ImageView(letter_o));
 		Letter_O.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -273,8 +298,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_O.setDisable(true);
 		
-		Button Letter_P = new Button();
+		Letter_P = new Button();
 		Letter_P.setGraphic(new ImageView(letter_p));
 		Letter_P.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -283,7 +309,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
-		Button Letter_Q = new Button();
+		Letter_P.setDisable(true);
+
+		Letter_Q = new Button();
 		Letter_Q.setGraphic(new ImageView(letter_q));
 		Letter_Q.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -292,8 +320,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_Q.setDisable(true);
 		
-		Button Letter_R = new Button();
+		Letter_R = new Button();
 		Letter_R.setGraphic(new ImageView(letter_r));
 		Letter_R.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -302,8 +331,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_R.setDisable(true);
 		
-		Button Letter_S = new Button();
+		Letter_S = new Button();
 		Letter_S.setGraphic(new ImageView(letter_s));
 		Letter_S.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -312,8 +342,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_S.setDisable(true);
 		
-		Button Letter_T = new Button();
+		Letter_T = new Button();
 		Letter_T.setGraphic(new ImageView(letter_t));
 		Letter_T.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -322,9 +353,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_T.setDisable(true);
 		
-		
-		Button Letter_U = new Button();
+		Letter_U = new Button();
 		Letter_U.setGraphic(new ImageView(letter_u));
 		Letter_U.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -333,8 +364,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_U.setDisable(true);
 		
-		Button Letter_V = new Button();
+		Letter_V = new Button();
 		Letter_V.setGraphic(new ImageView(letter_v));
 		Letter_V.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -343,8 +375,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_V.setDisable(true);
 		
-		Button Letter_W = new Button();
+		Letter_W = new Button();
 		Letter_W.setGraphic(new ImageView(letter_w));
 		Letter_W.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -353,8 +386,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_W.setDisable(true);
 		
-		Button Letter_X = new Button();
+		Letter_X = new Button();
 		Letter_X.setGraphic(new ImageView(letter_x));
 		Letter_X.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -363,8 +397,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_X.setDisable(true);
 		
-		Button Letter_Y = new Button();
+		Letter_Y = new Button();
 		Letter_Y.setGraphic(new ImageView(letter_y));
 		Letter_Y.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -373,8 +408,9 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_Y.setDisable(true);
 		
-		Button Letter_Z = new Button();
+		Letter_Z = new Button();
 		Letter_Z.setGraphic(new ImageView(letter_z));
 		Letter_Z.setStyle(
 				"-fx-background-radius: 100em;" +
@@ -383,6 +419,7 @@ public class WordGuessClient extends Application {
                 "-fx-max-width: 50px; " +
                 "-fx-max-height: 50px;"
         );
+		Letter_Z.setDisable(true);
 		
 		/* Functional Buttons */ 
 		Button Connect = new Button("Connect");
@@ -480,12 +517,6 @@ public class WordGuessClient extends Application {
 		
 		/* Text */ 
 		Text ConnectionTitle = new Text("Establish Connection");
-		Text ServerMessagesTitle = new Text("Server Messages:");
-		Text OpponentGuessTitle = new Text("Opponent's Guess:");
-		Text OpponentChoiceTitle = new Text("Opponent's Choice:");
-		Text YourChoiceTitle = new Text("Your Choice:");
-		Text YourGuessTitle = new Text("Your Guess:");
-		Text ScoreBoardTitle = new Text("Score Board:");
 		Text GameOverTitle = new Text("Game Over"); 
 		
 		/* Scene 1: User enter Port Number and IP Address */
@@ -574,19 +605,6 @@ public class WordGuessClient extends Application {
 		Letters_FifthRow.getChildren().addAll( Letter_U, Letter_V, Letter_W, Letter_X, Letter_Y, Letter_Z);
 		HBox NumLetters = new HBox();
 		NumLetters.setSpacing(5);
-		Button letter = null; 
-		for(int i = 0; i < NUM_OF_LETTERS; i++) {
-			letter = new Button();
-			letter.setStyle(
-					"-fx-background-radius: 100em;" +
-						"-fx-min-width: 60px; " +
-		                "-fx-min-height:60px; " +
-		                "-fx-max-width: 60px; " +
-		                "-fx-max-height:60px;"  +
-	                "-fx-background-color: #add8e6"
-	        );
-			NumLetters.getChildren().addAll(letter); 
-		}
 		
 
 		/* Server Messages */ 
@@ -599,32 +617,35 @@ public class WordGuessClient extends Application {
 		Circle Number = new Circle(); 
 		Number.setRadius(35);
 		Number.setFill(Color.web("#f4c2c2"));
-		StackPane NumberStack = new StackPane(); 
-		NumberStack.getChildren().addAll(Number, new Text("6")); 
+		StackPane NumberStack = new StackPane();
+		Text number = new Text();
+		NumberStack.getChildren().addAll(Number, number);
 		
 		/* Display Guess */
 		Circle Guess = new Circle(); 
 		Guess.setRadius(35);
 		Guess.setFill(Color.web("#BBDEFB"));
-		StackPane GuessStack = new StackPane(); 
-		GuessStack.getChildren().addAll(Guess, new Label("6")); 
+		StackPane GuessStack = new StackPane();
+		Text guessNum = new Text("6");
+		GuessStack.getChildren().addAll(Guess, guessNum);
 		
 		/* Display Attempt */
 		Circle Attempt = new Circle(); 
 		Attempt.setRadius(35);
 		Attempt.setFill(Color.web("#e1ef7e"));
-		StackPane AttemptStack = new StackPane(); 
-		AttemptStack.getChildren().addAll(Attempt, new Label("8")); 
+		StackPane AttemptStack = new StackPane();
+		Text attemptNum = new Text("3");
+		AttemptStack.getChildren().addAll(Attempt, attemptNum);
 		
 		/* Game Scores */ 
 		VBox ServerMessages = new VBox(); 
 		ServerMessages.setPadding(new Insets(10));
 		ServerMessages.setSpacing(8); 
-		ServerMessages.setPrefWidth(160); 
+		ServerMessages.setPrefWidth(310);
 		ServerMessages.setStyle("-fx-background-color: #f6eedf"); 
 		
 		ListView Messages = new ListView();
-		Messages.setPrefWidth(150);
+		Messages.setPrefWidth(300);
 		Messages.setPrefHeight(180);
 		
 		ServerMessages.getChildren().addAll(new Text("Server Messages:"), Messages, new Text("Categories:"), DiseasesButton, MythicalCreaturesButton, ProgrammingLanguagesButton); 
@@ -686,14 +707,298 @@ public class WordGuessClient extends Application {
 		EndLogo.getChildren().add(new ImageView(bigLogo));
 		
 		Scene startScene = new Scene(new VBox(Logo, ConnectionInfo), 300, 275);
-		Scene gameScene = new Scene(new VBox(GameLayout, GameScrollPane), 640, 600);
+		Scene gameScene = new Scene(new VBox(GameLayout, GameScrollPane), 820, 570);
 		Scene endScene = new Scene(new VBox(EndLogo, GameOver), 400, 300);
 		
-		Connect.setOnAction(e->primaryStage.setScene(gameScene));
+		Connect.setOnAction(e -> {
+
+			clientConnection = new Client ( data -> {
+				Platform.runLater(() -> {
+
+					primaryStage.setScene(gameScene);
+					int gameMode = data.gameMode;
+
+					switch (gameMode) {
+						case -1:
+							Messages.getItems().add("Somebody crashes!");
+							break;
+						case 0:
+							clientNum = data.clientNum;
+							Messages.getItems().add("You are player " + clientNum);
+							Messages.getItems().add("Please choose one in 3\ncategories below!");
+							break;
+						case 1:
+							if (numLetter == 0) {
+								Messages.getItems().add("Word has been given!");
+								number.setText(Integer.toString(data.numLetter));
+								numLetter = data.numLetter;
+							}
+							else {
+
+								win = data.win;
+								lose = data.lose;
+								if (win) {
+									Messages.getItems().add("You have won!");
+									break;
+								}
+								else if (lose) {
+									Messages.getItems().add("You have lost!");
+									break;
+								}
+
+
+								guessNum.setText(Integer.toString(data.numRemainGuess));
+								attemptNum.setText(Integer.toString(data.numRemainAttempt));
+
+
+								if (letterInWord) {
+									Messages.getItems().add("Guess is correct!");
+									charLocation = data.charLocation;
+									letters.add(charLocation, guess);
+								}
+								else {
+									Messages.getItems().add("Wrong guess!\nNumber of guesses decreased!");
+								}
+
+							}
+							Messages.getItems().add("Please guess a letter!");
+							break;
+
+					}
+
+					NumLetters.getChildren().clear();
+					for(int i = 0; i < numLetter; i++) {
+
+						Button letter = new Button();
+						letter.setStyle(
+								"-fx-background-radius: 100em;" +
+										"-fx-min-width: 60px; " +
+										"-fx-min-height:60px; " +
+										"-fx-max-width: 60px; " +
+										"-fx-max-height:60px;"  +
+										"-fx-background-color: #add8e6"
+						);
+
+						if (letters.size() != 0)
+							letter.setText(Character.toString(letters.get(i)));
+						letterButtons.add(letter);
+						NumLetters.getChildren().add(letter);
+
+					}
+
+
+				}); }, IP.getText(), Integer.parseInt(Port.getText()));
+
+			clientConnection.start();
+
+
+		});
+
+		Letter_A.setOnAction(e -> {
+			guess = 'A';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_B.setOnAction(e -> {
+			guess = 'B';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_C.setOnAction(e -> {
+			guess = 'C';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_D.setOnAction(e -> {
+			guess = 'D';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_E.setOnAction(e -> {
+			guess = 'E';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_F.setOnAction(e -> {
+			guess = 'F';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_G.setOnAction(e -> {
+			guess = 'G';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_H.setOnAction(e -> {
+			guess = 'H';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+		Letter_I.setOnAction(e -> {
+			guess = 'I';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_J.setOnAction(e -> {
+			guess = 'J';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_K.setOnAction(e -> {
+			guess = 'K';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_L.setOnAction(e -> {
+			guess = 'L';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_M.setOnAction(e -> {
+			guess = 'M';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_N.setOnAction(e -> {
+			guess = 'N';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_O.setOnAction(e -> {
+			guess = 'O';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_P.setOnAction(e -> {
+			guess = 'P';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_Q.setOnAction(e -> {
+			guess = 'Q';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_R.setOnAction(e -> {
+			guess = 'R';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_S.setOnAction(e -> {
+			guess = 'S';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_T.setOnAction(e -> {
+			guess = 'T';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_U.setOnAction(e -> {
+			guess = 'U';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_V.setOnAction(e -> {
+			guess = 'V';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_W.setOnAction(e -> {
+			guess = 'W';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_X.setOnAction(e -> {
+			guess = 'X';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_Y.setOnAction(e -> {
+			guess = 'Y';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		Letter_Z.setOnAction(e -> {
+			guess = 'Z';
+			Messages.getItems().add("Please hit submit to confirm");
+		});
+
+		DiseasesButton.setOnAction(e -> {
+
+			DiseasesButton.setDisable(true);
+			MythicalCreaturesButton.setDisable(true);
+			ProgrammingLanguagesButton.setDisable(true);
+			category = 'D';
+			Messages.getItems().add("Chosen Disease");
+			unDisableLetterBank();
+			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
+
+		});
+
+		MythicalCreaturesButton.setOnAction(e -> {
+
+			DiseasesButton.setDisable(true);
+			MythicalCreaturesButton.setDisable(true);
+			ProgrammingLanguagesButton.setDisable(true);
+			category = 'M';
+			Messages.getItems().add("Chosen Mythical Creatures");
+			unDisableLetterBank();
+			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
+
+		});
+
+		ProgrammingLanguagesButton.setOnAction(e -> {
+
+			DiseasesButton.setDisable(true);
+			MythicalCreaturesButton.setDisable(true);
+			ProgrammingLanguagesButton.setDisable(true);
+			category = 'P';
+			Messages.getItems().add("Chosen Programming Language");
+			unDisableLetterBank();
+			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
+
+		});
+
+		Submit.setOnAction(e -> {
+
+			clientConnection.send(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
+			Messages.getItems().add("Letter is submitted successfully!");
+
+		});
+
 		End.setOnAction(e-> primaryStage.setScene(endScene));
 
 		primaryStage.setScene(startScene);
 		primaryStage.show();
+	}
+
+	private void unDisableLetterBank() {
+		Letter_A.setDisable(false);
+		Letter_B.setDisable(false);
+		Letter_C.setDisable(false);
+		Letter_D.setDisable(false);
+		Letter_E.setDisable(false);
+		Letter_F.setDisable(false);
+		Letter_G.setDisable(false);
+		Letter_H.setDisable(false);
+		Letter_I.setDisable(false);
+		Letter_J.setDisable(false);
+		Letter_K.setDisable(false);
+		Letter_L.setDisable(false);
+		Letter_M.setDisable(false);
+		Letter_N.setDisable(false);
+		Letter_O.setDisable(false);
+		Letter_P.setDisable(false);
+		Letter_Q.setDisable(false);
+		Letter_R.setDisable(false);
+		Letter_S.setDisable(false);
+		Letter_T.setDisable(false);
+		Letter_U.setDisable(false);
+		Letter_V.setDisable(false);
+		Letter_W.setDisable(false);
+		Letter_X.setDisable(false);
+		Letter_Y.setDisable(false);
+		Letter_Z.setDisable(false);
 	}
 
 }

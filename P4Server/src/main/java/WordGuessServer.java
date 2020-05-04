@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,7 +23,7 @@ public class WordGuessServer extends Application {
 
     ListView<String> listItems;
     Server serverConnection;
-    ArrayList<ClientInfo> clients = new ArrayList<>();
+    ArrayList<ClientInfo> clientInfos = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -35,7 +36,7 @@ public class WordGuessServer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        primaryStage.setTitle("(Server) Let's Play Morra!!!");
+        primaryStage.setTitle("[Server] Word Guess Game");
 
         ImageView bigLogo1 = new ImageView(new Image("logo.png", 100, 100, true, true));
         bigLogo1.setRotate(45);
@@ -81,25 +82,8 @@ public class WordGuessServer extends Application {
             VBox smallLogos = new VBox(10, smallLogo1, smallLogo2, smallLogo3, smallLogo4);
 
             listItems = new ListView<String>();
-
             VBox clientArea = new VBox(20);
             ArrayList<Text> statusFields = new ArrayList<>();
-
-            for (int i = 0; i < clients.size(); ++i) {
-
-                ClientInfo theClient = clients.get(i);
-
-                Text categoryField = new Text("Category :" + theClient.categoryChoice);
-                Text wordField = new Text("Word: " + theClient.givenWord);
-                Text numGuessField = new Text("Number of guesses left: " + theClient.numGuessLeft);
-                Text numAttemptField = new Text("Number of attemp left: " + theClient.numAttemptLeft);
-                Text statusField = new Text("Player is playing...");
-
-                statusFields.add(statusField);
-                VBox clientBox = new VBox(5, new Text("Player " + theClient.clientNum), categoryField, wordField, numGuessField, numAttemptField, statusField);
-                clientArea.getChildren().add(clientBox);
-
-            }
 
 
             int portNum = Integer.parseInt(portField.getText());
@@ -110,26 +94,58 @@ public class WordGuessServer extends Application {
                 Platform.runLater (() -> {
 
                             int clientNum = data.clientNum;
-                            ClientInfo thisClient = clients.get(clientNum);
+
+                            statusFields.clear();
+                            clientArea.getChildren().clear();
+
                             switch (data.gameMode) {
                                 case -1:
                                     listItems.getItems().add("Somebody crashes!");
                                     break;
                                 case 0:
                                     listItems.getItems().add("Client " + clientNum + " joined!");
-                                    clients.add(new ClientInfo(clientNum));
-                                    // let client choose category
-                                    // give a word to the client
+                                    clientInfos.add(new ClientInfo(clientNum));
                                     break;
                                 case 1:
-                                    if (playerHasWon(thisClient)) {
-                                        statusFields.get(clientNum).setText("Player won!");
-                                    }
-                                    else if (playerHasLost(thisClient)) {
-                                        statusFields.get(clientNum).setText("Player lost!");
-                                    }
+                                    ClientInfo thisClient = clientInfos.get(clientNum - 1);
+
+                                    thisClient.numGuessLeft = data.numRemainGuess;
+                                    thisClient.numAttemptLeft = data.numRemainAttempt;
                                     thisClient.categoryChoice = data.category;
-                                    
+
+                                    if (thisClient.givenWord.equals("")) {
+                                        listItems.getItems().add("Client " + clientNum + " chose " + categoryName(data.category));
+                                        listItems.getItems().add("Client " + clientNum + " is given " + WordRepository.holdString);
+                                        thisClient.givenWord = WordRepository.holdString;
+                                        break;
+                                    }
+                                    listItems.getItems().add("Client " + clientNum + " guess letter " + data.guess);
+
+
+                                    break;
+
+                            }
+
+                            for (int i = 0; i < clientInfos.size(); ++i) {
+
+                                ClientInfo theClient = clientInfos.get(i);
+
+                                Text categoryField = new Text("Category: " + theClient.categoryChoice);
+                                Text wordField = new Text("Word: " + theClient.givenWord);
+                                Text numGuessField = new Text("Number of guesses left: " + theClient.numGuessLeft);
+                                Text numAttemptField = new Text("Number of attemp left: " + theClient.numAttemptLeft);
+                                Text statusField = new Text("Player is playing...");
+
+                                if (playerHasWon(theClient)) {
+                                    statusField.setText("Player won!");
+                                }
+                                else if (playerHasLost(theClient)) {
+                                    statusField.setText("Player lost!");
+                                }
+
+                                statusFields.add(statusField);
+                                VBox clientBox = new VBox(5, new Text("Player " + theClient.clientNum), categoryField, wordField, numGuessField, numAttemptField, statusField);
+                                clientArea.getChildren().add(clientBox);
 
                             }
 
@@ -139,7 +155,7 @@ public class WordGuessServer extends Application {
             HBox layoutBox = new HBox(20, smallLogos, listItems, clientArea);
             layoutBox.setPadding(new Insets(10));
 
-            primaryStage.setScene(new Scene(layoutBox,600,400));
+            primaryStage.setScene(new Scene(new ScrollPane(layoutBox),600,400));
 
         });
 
@@ -165,6 +181,16 @@ public class WordGuessServer extends Application {
         if (theClient.numAttemptLeft == 0)
             return true;
         return false;
+    }
+
+    String categoryName (char c) {
+        if (c == 'D')
+            return "Disease";
+        if (c == 'M')
+            return "Mythical Creature";
+        if (c == 'P')
+            return "Programming Language";
+        return "Error";
     }
 
 }

@@ -17,6 +17,8 @@ public class Server{
     private Consumer<GameInfo> callback;
     int port;
 
+    ArrayList<ClientInfo> clientInfos = new ArrayList<>();
+
 
     Server(Consumer<GameInfo> call, int p){
 
@@ -32,21 +34,22 @@ public class Server{
 
         public void run() {
 
-            try(ServerSocket mysocket = new ServerSocket(port)) {
+            try(ServerSocket mysocket = new ServerSocket(port);) {
 
                 while(true) {
 
                     count += 1;
 
                     ClientThread c = new ClientThread(mysocket.accept(), count);
-                    callback.accept(new GameInfo(0, count, -1, -1, '$', 'X', -1, false, false, false));
+                    callback.accept(new GameInfo(0, count, -1, -1, -1, '$', 'X', -1, false, false, false));
+                    clientInfos.add(new ClientInfo(count));
                     clients.add(c);
                     c.start();
 
                 }
             }//end of try
             catch(Exception e) {
-                callback.accept(new GameInfo(-1, count, -1, -1, '$', 'X', -1, false, false, false));
+                callback.accept(new GameInfo(-1, count, -1, -1, -1, '$', 'X', -1, false, false, false));
             }
         }//end of while
     }
@@ -77,27 +80,52 @@ public class Server{
         public void run(){
 
             try {
+
                 in = new ObjectInputStream(connection.getInputStream());
                 out = new ObjectOutputStream(connection.getOutputStream());
                 connection.setTcpNoDelay(true);
+
             }
             catch(Exception e) {
                 System.out.println("Streams not open");
             }
 
-            updateClients(new GameInfo(0, count, -1, -1, '$', 'X', -1, false, false, false));
+            updateClients(new GameInfo(0, count, -1, -1, -1, '$', 'X', -1, false, false, false));
 
             while(true) {
                 try {
 
                     GameInfo inData = (GameInfo)in.readObject();
-                    callback.accept(inData);
-                    updateClients(inData);
+                    int clientNum = inData.clientNum;
+                    int numLetter = inData.numLetter, numGuess = inData.numRemainGuess, numAttempt = inData.numRemainAttempt, charLocation = inData.charLocation;
+                    char guess = inData.guess, category = inData.category;
+                    boolean win = inData.win, lose = inData.lose, letterInWord = inData.letterInWord;
+
+                    ClientInfo thisClient = clientInfos.get(clientNum-1);
+
+                    thisClient.categoryChoice = category;
+                    if (numLetter == 0) {
+                        String word = WordRepository.getRandWord(thisClient.categoryChoice);
+                        WordRepository.holdString = word;
+                        thisClient.givenWord = word;
+                        numLetter = word.length();
+                    }
+                    thisClient.numGuessLeft = inData.numRemainGuess;
+                    thisClient.numAttemptLeft = inData.numRemainAttempt;
+
+                    if (playerHasWon(thisClient))
+                        win = true;
+                    else if (playerHasLost(thisClient))
+                        lose = true;
+
+
+                    callback.accept(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
+                    updateClients(new GameInfo(1, clientNum, numLetter, numGuess, numAttempt, guess, category, charLocation, win, lose, letterInWord));
 
                 }
                 catch(Exception e) {
 
-                    GameInfo error = new GameInfo(-1, count, -1, -1, '$', 'X', -1, false, false, false);
+                    GameInfo error = new GameInfo(-1, count, -1, -1, -1, '$', 'X', -1, false, false, false);
                     callback.accept(error);
                     updateClients(error);
                     clients.remove(this);
@@ -106,6 +134,20 @@ public class Server{
                 }
             }
         }//end of run
+
+        boolean playerHasWon (ClientInfo theClient) {
+            for (int i = 0; i < 3; ++i) {
+                if (theClient.categories[i] != 'X')
+                    return false;
+            }
+            return true;
+        }
+
+        boolean playerHasLost (ClientInfo theClient) {
+            if (theClient.numAttemptLeft == 0)
+                return true;
+            return false;
+        }
 
 
     }//end of client thread

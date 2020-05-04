@@ -63,7 +63,24 @@ public class WordRepository {
         }
     };
 
-    public static String getRandWord (ArrayList<String> repo) {
+    public static ArrayList<String> Default = new ArrayList<String>() {
+        {
+            add("DEFAULT_WORD");
+        }
+    };
+
+    public static String holdString;
+
+    public static String getRandWord (char c) {
+
+        ArrayList<String> repo = Default;
+
+        if (c == 'D')
+            repo = Disease;
+        else if (c == 'M')
+            repo = MythicalCreature;
+        else if (c == 'P')
+            repo = ProgrammingLang;
 
         Random rand = new Random();
         int randIndex = rand.nextInt(repo.size());
